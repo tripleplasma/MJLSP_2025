@@ -6,7 +6,6 @@ import '../css/Login.css';
 const Login = () => {
   const [username, setUsername] = useState(''); // Stores local username typed
   const [password, setPassword] = useState(''); // Stores local password typed
-  const navigate = useNavigate(); // Used for navigation
 
   // Submits information to backend for login
   const handleSubmit = (event) => {

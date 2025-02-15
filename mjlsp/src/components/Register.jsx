@@ -8,8 +8,6 @@ const Register = () => {
   const [password, setPassword] = useState(''); // Stores password typed
   const [confirmPassword, setConfirmPassword] = useState(''); // Stores confirmed password typed
 
-  const navigate = useNavigate(); // Used for navigation
-
   // Submits information to the backend for registration
   const handleSubmit = (event) => {
     event.preventDefault();
