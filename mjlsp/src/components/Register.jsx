@@ -67,6 +67,11 @@ const Register = () => {
   return (
     <div className="register-container">
       <h2>Register</h2>
+      <text>Username: </text><input type="text" name="username"></input>
+      <br></br>
+      <text>Password: </text><input type="password" name="password"></input> 
+      <br></br>
+      <text>Confirm Password: </text><input type="password" name="password"></input>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import {v4 as uuidv4} from 'uuid';
 import Login from './Login';
 import Register from './Register';
 import MainPage from './MainPage';
+import Postings from './Postings';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
               <Route path="/" element={<MainPage/>}/>
               <Route path="/login" element={<Login/>} />
               <Route path="/register" element={<Register/>} />
+              <Route path="/postings" element={<Postings/>} />
             </Routes>
           </div>
       </div>
@@ -30,8 +32,13 @@ function Navbar() { // Receive gemCount as a prop
   return (
     <div className="navbar-container">
       <nav className="navbar">
+        <Link to="/"><img src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgEmXtfhMS5Ubv_Qemg1CFlrEH-NsPgaPiTg&s"} style={{width:75, height:75}}></img></Link>
+        {"      "}
         <Link to="/login">Login</Link>
+        {"      "}
         <Link to="/register">Register</Link>
+        {"      "}
+        <Link to="/postings"> Job Postings</Link>
       </nav>
     </div>
   );

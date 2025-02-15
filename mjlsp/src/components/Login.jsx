@@ -37,6 +37,17 @@ const Login = () => {
   return (
     <div className="login-container">
       <h2>Please Login:</h2>
+      <text>Username: </text><input type="text" 
+                                    name="username" 
+                                    value={username} 
+                                    onChange={(e) => setUsername(e.target.value)}>
+                                    </input>
+      <br></br>
+      <text>Password: </text><input type="password" 
+                                    name="password" 
+                                    value={password} 
+                                    onChange={(e) => setPassword(e.target.value)}>
+                                    </input>
     </div>
   );
 };

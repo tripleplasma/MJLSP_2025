@@ -1,7 +1,7 @@
 const MainPage = () => {
     return(
         <div>
-            <h1>MainPage</h1>
+            <h1>Welcome to the MJLSP Career Board!</h1>
         </div>
     );
 }
