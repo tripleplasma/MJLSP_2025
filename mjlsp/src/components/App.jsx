@@ -7,6 +7,7 @@ import Login from './Login';
 import Register from './Register';
 import MainPage from './MainPage';
 import Postings from './Postings';
+import Resources from './Resources';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
               <Route path="/login" element={<Login/>} />
               <Route path="/register" element={<Register/>} />
               <Route path="/postings" element={<Postings/>} />
+              <Route path="/resources" element={<Resources/>} />
             </Routes>
           </div>
       </div>
@@ -46,6 +48,8 @@ function Navbar() { // Receive gemCount as a prop
         <Link to="/register">Register</Link>
         {"      "}
         <Link to="/postings"> Job Postings</Link>
+        {"      "}
+        <Link to="/resources"> Find Resources</Link>
       </nav>
     </div>
   );
