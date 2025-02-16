@@ -20,7 +20,7 @@ const Postings = () => {
   // sends information to linkedin-job-api
   const handleSubmit = (event) => {
     event.preventDefault();
-    fetch('http://localhost:8080/extract-job-info', {
+    fetch('http://10.141.193.55:8081/extract-job-info', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

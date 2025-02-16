@@ -10,7 +10,7 @@ const Login = ({setLoginUsername}) => {
   // Submits information to backend for login
   const handleSubmit = (event) => {
     event.preventDefault();
-    fetch('http://localhost:8080/login', {
+    fetch('http://10.141.193.55:8081/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

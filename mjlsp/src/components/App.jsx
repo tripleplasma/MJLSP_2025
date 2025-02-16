@@ -28,7 +28,7 @@ function App() {
     event.preventDefault();
     //There could be a bug where a user could fake leave, then come back
     if(localStorage.getItem('userId')){
-      fetch(`http://localhost:8080/logout`,{
+      fetch(`http://10.141.193.55:8081/logout`,{
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
