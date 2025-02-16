@@ -17,52 +17,57 @@ const Profile = () => {
   // Submits information to backend for login
   const handleSubmit = (event) => {
     event.preventDefault();
-    // fetch('http://10.141.193.55:8081/login', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     // username: username,
-    //     // password: password
-    //   }),
-    // })
-    // .then(response => {
-    //   if(response.status === 200){
-    //     alert('Successfully logged in.');
-    //     navigate('/postings');
-    //   }else if(response.status === 401){
-    //     alert('Incorrect user login');
-    //   }else{
-    //     console.log("Error")
-    //   }
-    // })
-    // .catch(err => {
-    //   console.error('Error:', err);
-    // });
+    fetch('http://10.141.193.55:8081/profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "userId":localStorage.getItem("userId"),
+        "keyword":keyword,
+        "location":location,
+        "salary":salary,
+        "jobType":jobType,
+        "remoteFilter":remoteFilter,
+        "experience-level":experienceLevel
+      }),
+    })
+    .then(response => {
+      if(response.status === 200){
+        alert('Successfully logged in.');
+        navigate('/postings');
+      }else if(response.status === 401){
+        alert('Incorrect user login');
+      }else{
+        console.log("Error")
+      }
+    })
+    .catch(err => {
+      console.error('Error:', err);
+    });
   };
 
   return (
     <div class="profile-form-container">
-    <form class="profile-form">
+    <form class="profile-form" onSubmit={handleSubmit}>
       <div class="profile-form-group">
         <div class="profile-form-item">
           <label for="position">Position</label>
-          <input type="text" id="position" name="position"/>
+          <input type="text" id="position" name="position" onChange={(e) => setKeyword(e.target.value)}/>
         </div>
       </div>
       
       <div class="profile-form-group">
         <div class="profile-form-item">
           <label for="location">Location</label>
-          <input type="text" id="location" name="location"/>
+          <input type="text" id="location" name="location" onChange={(e) => setLocation(e.target.value)}/>
         </div>
       </div>
 
       <div class="profile-form-group">
         <div class="profile-form-item">
           <label for="job-type">Job Type</label>
-          <select id="job-type" name="job-type">
+          <select id="job-type" name="job-type" onChange={(e) => setJobType(e.target.value)}>
             <option value="full time">Full Time</option>
             <option value="part time">Part Time</option>
             <option value="contract">Contract</option>
@@ -76,7 +81,7 @@ const Profile = () => {
       <div class="profile-form-group">
         <div class="profile-form-item">
           <label for="job-format">Job Format</label>
-          <select id="job-format" name="job-format">
+          <select id="job-format" name="job-format" onChange={(e) => setRemoteFilter(e.target.value)}>
             <option value="on site">On Site</option>
             <option value="remote">Remote</option>
             <option value="hybrid">Hybrid</option>
@@ -87,14 +92,14 @@ const Profile = () => {
       <div class="profile-form-group">
         <div class="profile-form-item">
           <label for="minimum-salary">Minimum Salary</label>
-          <input type="number" id="minimum-salary" name="minimum-salary" min="0"/>
+          <input type="number" id="minimum-salary" name="minimum-salary" min="0" onChange={(e) => setSalary(e.target.value)}/>
         </div>
       </div>
 
       <div class="profile-form-group">
         <div class="profile-form-item">
           <label for="experience-level">Experience Level</label>
-          <select id="experience-level" name="experience-level">
+          <select id="experience-level" name="experience-level" onChange={(e) => setExperienceLevel(e.target.value)}>
             <option value="internship">Internship</option>
             <option value="entry level">Entry Level</option>
             <option value="associate">Associate</option>
