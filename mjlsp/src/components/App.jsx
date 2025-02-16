@@ -10,48 +10,83 @@ import Postings from './Postings';
 import Resources from './Resources';
 
 function App() {
+
+  const [username, setUsername] = useState(null); // State to store login status
+
+  useEffect(() => {
+    let userId = localStorage.getItem('userId');
+  
+    // if userId/sessionId does not exist, generate a value for it and set it in local storage
+    if(userId === null || userId === "null") {
+      userId = uuidv4();
+      localStorage.setItem('userId', userId);
+    }
+  }, [])
+
+  useEffect(() => {
+    const logout = (event) => {
+      event.preventDefault();
+      //There could be a bug where a user could fake leave, then come back
+      if(localStorage.getItem('userId')){
+        fetch(`http://localhost:8080/logout`,{
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: localStorage.getItem('userId')
+          }),
+        })
+        .then(response => {
+          if(!response.ok) { console.error("I am Error."); return; }
+        })
+        .catch(err => {
+          console.error("Error fetching user details:", err);
+        });
+      }
+    };
+
+    window.addEventListener('beforeunload', logout);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('beforeunload', logout);
+    };
+  }, []);
+
   return (
     <Router>
       <div className="App">
-          <div className="logo-container">
-            <Link to="/">
-              <div className="logo-container">
-                <img src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgEmXtfhMS5Ubv_Qemg1CFlrEH-NsPgaPiTg&s"} style={{width:75, height:75}}></img>
-              </div>
-            </Link>
+        <div className="ribbon">
+          <Link to="/">
+            <img className="logo" src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgEmXtfhMS5Ubv_Qemg1CFlrEH-NsPgaPiTg&s"}></img>
+          </Link>
+          <div className="auth-buttons">
+            <Link to="/postings" className="button">Postings</Link>
+            <Link to="/resources" className="button">Resources</Link>
+            {username == null ?
+              <Link to="/register" className="button">Register</Link>
+              : 
+              (<></>) 
+            }
+            {username == null ?
+              (<Link to="/login" className="button">Login</Link>)
+              : 
+              (<div className='username'>Hello, {username}</div>) 
+            }
           </div>
-          <div className="navbar-container">
-            <Navbar/>
-          </div>
-          <div className="main-content">
-            <Routes>
-              <Route path="/" element={<MainPage/>}/>
-              <Route path="/login" element={<Login/>} />
-              <Route path="/register" element={<Register/>} />
-              <Route path="/postings" element={<Postings/>} />
-              <Route path="/resources" element={<Resources/>} />
-            </Routes>
-          </div>
+        </div>
+        <div className="main-content">
+          <Routes>
+            <Route path="/" element={<MainPage/>}/>
+            <Route path="/login" element={<Login setLoginUsername={setUsername}/>} />
+            <Route path="/register" element={<Register setLoginUsername={setUsername}/>} />
+            <Route path="/postings" element={<Postings/>} />
+            <Route path="/resources" element={<Resources/>} />
+          </Routes>
+        </div>
       </div>
     </Router>
-  );
-}
-
-function Navbar() { // Receive gemCount as a prop
-  return (
-    <div className="navbar-container">
-      <nav className="navbar">
-        <Link to="/"></Link>
-        {"      "}
-        <Link to="/login">Login</Link>
-        {"      "}
-        <Link to="/register">Register</Link>
-        {"      "}
-        <Link to="/postings"> Job Postings</Link>
-        {"      "}
-        <Link to="/resources"> Find Resources</Link>
-      </nav>
-    </div>
   );
 }
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import '../css/Login.css';
 
-const Login = () => {
+const Login = ({setLoginUsername}) => {
   const [username, setUsername] = useState(''); // Stores local username typed
   const [password, setPassword] = useState(''); // Stores local password typed
   const navigate = useNavigate()
@@ -17,11 +17,13 @@ const Login = () => {
       },
       body: JSON.stringify({
         username: username,
-        password: password
+        password: password,
+        userId: localStorage.getItem('userId')
       }),
     })
     .then(response => {
       if(response.status === 200){
+        setLoginUsername(username)
         alert('Successfully logged in.');
         navigate('/postings');
       }else if(response.status === 401){

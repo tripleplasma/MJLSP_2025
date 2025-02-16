@@ -113,6 +113,25 @@ app.post("/extract-job-info", async (req, res) => {
   }
 });
 
+app.post("/logout", async (req, res) => {
+  try {
+    // Extracting the JSON data sent by frontend (the body of the GET request)
+    const jsonData = req.body;
+    console.log("Received data:", jsonData);
+
+    if(jsonData['userId'] in active_users){
+      delete active_users.jsonData['userId']
+      res.status(200).send("Success");
+    }else{
+      res.status(401).send("Session Id was not valid")
+    }
+
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Something went wrong!" });
+  }
+});
+
 // GET endpoint to handle the incoming JSON
 // WE USE POST BECAUSE IT ALLOWS US TO SEND BODIES
 app.post("/login", async (req, res) => {
@@ -128,6 +147,7 @@ app.post("/login", async (req, res) => {
       res.status(401).send("Unauthorized")
     }else{
       res.status(200).send("Success");
+      active_users[jsonData['userId']] = jsonData['username']
     }
 
   } catch (error) {

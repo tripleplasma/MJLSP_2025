@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import "../css/Register.css";
 
-const Register = () => {
+const Register = ({setLoginUsername}) => {
   const [username, setUsername] = useState(''); // Stores username typed
   const [password, setPassword] = useState(''); // Stores password typed
   const [confirmPassword, setConfirmPassword] = useState(''); // Stores confirmed password typed
@@ -24,7 +24,8 @@ const Register = () => {
             },
             body: JSON.stringify({
               username: username,
-              password: password
+              password: password,
+              userId: localStorage.getItem('userId')
             }),
           })
           .then(response => {
