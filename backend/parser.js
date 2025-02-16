@@ -83,7 +83,7 @@ const validateUser = async (data) => {
 };
 
 // GET endpoint to handle the incoming JSON
-app.get("/extract-job-info", async (req, res) => {
+app.post("/extract-job-info", async (req, res) => {
   try {
     // Extracting the JSON data sent by frontend (the body of the GET request)
     const jsonData = req.body;
