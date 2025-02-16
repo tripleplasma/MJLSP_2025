@@ -1,0 +1,9 @@
+spring:
+  application:
+    name:
+      LearningAPI
+    datasource:
+      driverClassName: org.h2.Driver
+
+    server:
+      port: 8080
