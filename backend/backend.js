@@ -4,7 +4,7 @@ const linkedIn = require("linkedin-jobs-api");
 const mysql = require('mysql2/promise');
 const cors = require('cors');
 require('dotenv').config();
-const port = 8080;
+const port = 8081;
 
 const dbConfig = {
   host: process.env.HOST,
