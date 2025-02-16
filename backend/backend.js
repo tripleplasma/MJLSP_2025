@@ -118,9 +118,9 @@ app.post("/logout", async (req, res) => {
     // Extracting the JSON data sent by frontend (the body of the GET request)
     const jsonData = req.body;
     console.log("Received data:", jsonData);
-
     if(jsonData['userId'] in active_users){
-      delete active_users.jsonData['userId']
+      console.log(active_users)
+      delete active_users[jsonData['userId']]
       res.status(200).send("Success");
     }else{
       res.status(401).send("Session Id was not valid")

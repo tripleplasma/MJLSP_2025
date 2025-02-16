@@ -23,29 +23,33 @@ function App() {
     }
   }, [])
 
-  useEffect(() => {
-    const logout = (event) => {
-      event.preventDefault();
-      //There could be a bug where a user could fake leave, then come back
-      if(localStorage.getItem('userId')){
-        fetch(`http://localhost:8080/logout`,{
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: localStorage.getItem('userId')
-          }),
-        })
-        .then(response => {
-          if(!response.ok) { console.error("I am Error."); return; }
-        })
-        .catch(err => {
-          console.error("Error fetching user details:", err);
-        });
-      }
-    };
+  const logout = (event) => {
+    event.preventDefault();
+    //There could be a bug where a user could fake leave, then come back
+    if(localStorage.getItem('userId')){
+      fetch(`http://localhost:8080/logout`,{
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: localStorage.getItem('userId')
+        }),
+      })
+      .then(response => {
+        if(response.ok){
+          setUsername(null)
+        } else if(!response.ok) { 
+          console.error("I am Error."); return; 
+        }
+      })
+      .catch(err => {
+        console.error("Error fetching user details:", err);
+      });
+    }
+  };
 
+  useEffect(() => {
     window.addEventListener('beforeunload', logout);
 
     // Cleanup the event listener on component unmount
@@ -67,7 +71,7 @@ function App() {
             {username == null ?
               <Link to="/register" className="button">Register</Link>
               : 
-              (<></>) 
+              <div className='button' onClick={logout}>Logout</div>
             }
             {username == null ?
               (<Link to="/login" className="button">Login</Link>)
