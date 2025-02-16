@@ -47,10 +47,6 @@ const validateRequestData = (data) => {
 };
 
 const validateUserAndPassword = async (data) => {
-  const required_fields = [
-    "username", "password"
-  ];
-
   let userExists = await userExist(data);
 
   if (userExists == 0) {
@@ -70,11 +66,36 @@ const validateUserAndPassword = async (data) => {
 };
 
 const userExist = async (data) => {
-  const required_fields = [
-    "username"
-  ];
   const [exists] = await pool.query("SELECT COUNT(*) FROM Users WHERE username = ?;", [data["username"]]);
   return exists[0]['COUNT(*)'] > 0
+};
+
+const addToProfile = async (data) => {
+  const fieldMapping = {
+    keyword: "position", // Map 'keyword' from data to 'position' in DB
+    location: "location",
+    jobType: "jobType",
+    remoteFilter: "remote",
+    salary: "salary",
+    "experience-level": "experience-level"
+  };
+
+  const updates = [];
+  const values = [];
+
+  for (let key in fieldMapping) {
+    if (data[key] != null) {
+      const columnName = fieldMapping[key]; // Map to correct DB column
+      updates.push(`\`${columnName}\` = ?`);
+      values.push(data[key]);
+    }
+  }
+
+  if (updates.length > 0) {
+    values.push(active_users[data["userId"]]); // Add username for WHERE condition
+    const sql = `UPDATE Users SET ${updates.join(", ")} WHERE username = ?;`;
+    await pool.query(sql, values);
+  }
 };
 
 // GET endpoint to handle the incoming JSON
@@ -167,11 +188,33 @@ app.post("/signup", async (req, res) => {
     const usernameTaken = await userExist(jsonData);
     if (!usernameTaken) {
       await pool.query("INSERT INTO Users (username, password) VALUES (?, ?);", [jsonData['username'], jsonData['password']])
-      res.status(200).send("Register Success")
-    }else{
-      res.status(400).send("User Already Exist")
+      res.status(200).send("Register Success");
+    } else {
+      res.status(400).send("User Already Exist");
     }
 
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Something went wrong!" });
+  }
+});
+
+// POST endpoint to handle the incoming JSON
+app.post("/profile", async (req, res) => {
+  try {
+    // Extracting the JSON data sent by frontend (the body of the GET request)
+    const jsonData = req.body;
+    console.log("Signup Received data:", jsonData);
+
+    // Validate the incoming data
+    const userExists = await userExist(jsonData);
+    if (userExists) {
+      await addToProfile(jsonData);
+    } else {
+      res.status(400).send("User Does Not Exist");
+    }
+
+    res.status(200).send("Profile Updated");
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Something went wrong!" });
