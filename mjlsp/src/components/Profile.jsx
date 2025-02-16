@@ -43,25 +43,73 @@ const Profile = () => {
   };
 
   return (
-    <div className="postings-container">
-      <h2>Find out your profile!</h2>
-      <text>Keyword (Required):                                                                 </text><input type="text" name="keyword" value={keyword} onChange={(e) => setKeyword(e.target.value)}></input>
-      <br></br>
-      <text>Location:                                                                           </text><input type="text" name="location" value={location} onChange={(e) => setLocation(e.target.value)}></input>
-      <br></br>
-      <text>Date Since Posted (past month, past week, 24hr):                                    </text><input type="text" name="dateSincePosted" value={dateSincePosted} onChange={(e) => setDateSincePosted(e.target.value)}></input>
-      <br></br>
-      <text>Job Type (full time, part time, contract, temporary, volunteer, internship):        </text><input type="text" name="jobType" value={jobType} onChange={(e) => setJobType(e.target.value)}></input>
-      <br></br>
-      <text>Job Format (on site, remote, hybrid):                                               </text><input type="text" name="remoteFilter" value={remoteFilter} onChange={(e) => setRemoteFilter(e.target.value)}></input>
-      <br></br>
-      <text>Minimum Salary (40000, 60000, 80000, 100000, 120000):                               </text><input type="text" name="salary" value={salary} onChange={(e) => setSalary(e.target.value)}></input>
-      <br></br>
-      <text>Experience Level (internship, entry level, associate, senior, director, executive): </text><input type="text" name="experienceLevel" value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)}></input>
-      <br></br>
-      <button onClick={handleSubmit}>Save Profile</button>
-      <br></br>
-    </div>
+    <div class="profile-form-container">
+    <form class="profile-form">
+      <div class="profile-form-group">
+        <div class="profile-form-item">
+          <label for="position">Position</label>
+          <input type="text" id="position" name="position"/>
+        </div>
+      </div>
+      
+      <div class="profile-form-group">
+        <div class="profile-form-item">
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location"/>
+        </div>
+      </div>
+
+      <div class="profile-form-group">
+        <div class="profile-form-item">
+          <label for="job-type">Job Type</label>
+          <select id="job-type" name="job-type">
+            <option value="full time">Full Time</option>
+            <option value="part time">Part Time</option>
+            <option value="contract">Contract</option>
+            <option value="temporary">Temporary</option>
+            <option value="volunteer">Volunteer</option>
+            <option value="internship">Internship</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="profile-form-group">
+        <div class="profile-form-item">
+          <label for="job-format">Job Format</label>
+          <select id="job-format" name="job-format">
+            <option value="on site">On Site</option>
+            <option value="remote">Remote</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="profile-form-group">
+        <div class="profile-form-item">
+          <label for="minimum-salary">Minimum Salary</label>
+          <input type="number" id="minimum-salary" name="minimum-salary" min="0"/>
+        </div>
+      </div>
+
+      <div class="profile-form-group">
+        <div class="profile-form-item">
+          <label for="experience-level">Experience Level</label>
+          <select id="experience-level" name="experience-level">
+            <option value="internship">Internship</option>
+            <option value="entry level">Entry Level</option>
+            <option value="associate">Associate</option>
+            <option value="senior">Senior</option>
+            <option value="director">Director</option>
+            <option value="executive">Executive</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="profile-form-submit">
+        <button type="submit">Save Profile</button>
+      </div>
+    </form>
+  </div>
   );
 };
 
