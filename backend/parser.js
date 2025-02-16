@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const linkedIn = require("linkedin-jobs-api"); 
 const mysql = require('mysql2/promise');
+const cors = require('cors');
 require('dotenv').config();
 const port = 8080;
 
@@ -16,6 +17,7 @@ const dbConfig = {
 const pool = mysql.createPool(dbConfig);
 
 app.use(express.json());
+app.use(cors())
 
 // Middleware to validate the incoming JSON data
 const validateRequestData = (data) => {
@@ -71,8 +73,8 @@ const validateUser = async (data) => {
     "username"
   ];
 
-  const [exists] = await pool.query("SELECT EXISTS(SELECT 1 FROM Users WHERE username = ?) AS userExists;", [data["username"]]);
-  
+  const [exists] = await pool.query("SELECT 1 FROM Users WHERE username = ? LIMIT;", [data["username"]]);
+  console.log(exists)
   if (exists[0].userExists == 1) {
     return true;
   }
@@ -117,7 +119,7 @@ app.get("/extract-job-info", async (req, res) => {
 });
 
 // GET endpoint to handle the incoming JSON
-app.get("/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     // Extracting the JSON data sent by frontend (the body of the GET request)
     const jsonData = req.body;
@@ -126,8 +128,12 @@ app.get("/login", async (req, res) => {
     // Validate the incoming data
     const validation = await validateUserAndPassword(jsonData);
 
-    // Send back the response to the frontend
-    res.json(validation); // Sending the response back as JSON
+    if(!validation){
+      res.status(401).send("Unauthorized")
+    }else{
+      res.status(200).send("Success");
+    }
+
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Something went wrong!" });
@@ -139,7 +145,7 @@ app.post("/signup", async (req, res) => {
   try {
     // Extracting the JSON data sent by frontend (the body of the GET request)
     const jsonData = req.body;
-    console.log("Received data:", jsonData);
+    console.log("Signup Received data:", jsonData);
 
     // Validate the incoming data
     const validation = await validateUser(jsonData);
