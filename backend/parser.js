@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const linkedIn = require("linkedin-jobs-api"); 
-const port = 3000;
+const port = 8080;
 app.use(express.json());
 
 // Middleware to validate the incoming JSON data
@@ -24,7 +24,7 @@ const validateRequestData = (data) => {
   
   for (let field of required_fields) {
     if (!data[field]) {
-      return false;
+      return true;
     }
   }
   return null; // No validation errors
