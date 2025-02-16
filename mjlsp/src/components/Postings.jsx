@@ -55,45 +55,30 @@ const Postings = () => {
   return (
     <div className="postings-container">
       <h2>Find Job Postings that Meet Your Needs!</h2>
-      <text>Keyword (Required):                                                                 </text><input type="text" name="keyword" value={keyword} onChange={(e) => setKeyword(e.target.value)}></input>
-      <br></br>
-      <text>Number of Postings Shown (Required):                                                </text><input type="text" name="limit" value={limit} onChange={(e) => setLimit(e.target.value)}></input>
-      <br></br>
-      <text>Location:                                                                           </text><input type="text" name="location" value={location} onChange={(e) => setLocation(e.target.value)}></input>
-      <br></br>
-      <text>Date Since Posted (past month, past week, 24hr):                                    </text><input type="text" name="dateSincePosted" value={dateSincePosted} onChange={(e) => setDateSincePosted(e.target.value)}></input>
-      <br></br>
-      <text>Job Type (full time, part time, contract, temporary, volunteer, internship):        </text><input type="text" name="jobType" value={jobType} onChange={(e) => setJobType(e.target.value)}></input>
-      <br></br>
-      <text>Job Format (on site, remote, hybrid):                                               </text><input type="text" name="remoteFilter" value={remoteFilter} onChange={(e) => setRemoteFilter(e.target.value)}></input>
-      <br></br>
-      <text>Minimum Salary (40000, 60000, 80000, 100000, 120000):                               </text><input type="text" name="salary" value={salary} onChange={(e) => setSalary(e.target.value)}></input>
-      <br></br>
-      <text>Experience Level (internship, entry level, associate, senior, director, executive): </text><input type="text" name="experienceLevel" value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)}></input>
-      <br></br>
-      <text>Sort By (recent, relevant):                                                         </text><input type="text" name="sortBy" value={sortBy} onChange={(e) => setSortBy(e.target.value)}></input>
-      <br></br>
-      <text>Page (0, 1, 2, etc.):                                                               </text><input type="text" name="page" value={page} onChange={(e) => setPage(e.target.value)}></input>
-      <br></br>
-      <button onClick={handleSubmit}>Find Jobs</button>
-      <br></br>
-      <br></br>
-      <div className="job-list">
-        {postings.length > 0 ? (
-          postings.map((job, index) => (
-            <div key={index} className="job-card">
-              <img src={job.companyLogo} alt={`${job.company} Logo`} />
-              <h3>{job.position}</h3>
-              <p><strong>Company:</strong> {job.company}</p>
-              <p><strong>Location:</strong> {job.location}</p>
-              <p><strong>Date Posted:</strong> {job.date}</p>
-              <a href={job.jobUrl} target="_blank" rel="noopener noreferrer">View Job</a>
-              <br></br>
-            </div>
-          ))
-        ) : (
-          <p>No job postings found.</p>
-        )}
+      <form className="form-container" onSubmit={handleSubmit}>
+        <input type="text" placeholder="Keyword (Required)" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+        <input type="text" placeholder="# of Jobs Shown (Required)" value={limit} onChange={(e) => setLimit(e.target.value)} />
+        <input type="text" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
+        <input type="text" placeholder="Date Since Posted" value={dateSincePosted} onChange={(e) => setDateSincePosted(e.target.value)} />
+        <input type="text" placeholder="Job Type (full time, part time, internship)" value={jobType} onChange={(e) => setJobType(e.target.value)} />
+        <input type="text" placeholder="Job Format (on site, remote, hybrid)" value={remoteFilter} onChange={(e) => setRemoteFilter(e.target.value)} />
+        <input type="text" placeholder="Minimum Salary" value={salary} onChange={(e) => setSalary(e.target.value)} />
+        <input type="text" placeholder="Experience Level" value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)} />
+        <input type="text" placeholder="Sort By (recent, relevant)" value={sortBy} onChange={(e) => setSortBy(e.target.value)} />
+        <input type="text" placeholder="Page (0, 1, 2, etc.)" value={page} onChange={(e) => setPage(e.target.value)} />
+        <button type="submit">Find Jobs</button>
+      </form>
+
+      <div className="postings-grid">
+        {postings.map((job, index) => (
+          <a key={index} href={job.jobUrl} target="_blank" rel="noopener noreferrer" className="posting-card">
+            <img src={job.companyLogo} alt={`${job.company} logo`} className="company-logo" />
+            <h3>{job.position}</h3>
+            <p><strong>{job.company}</strong></p>
+            <p>{job.location}</p>
+            <p>{job.agoTime}</p>
+          </a>
+        ))}
       </div>
     </div>
   );
