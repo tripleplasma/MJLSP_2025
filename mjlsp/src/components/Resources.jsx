@@ -10,7 +10,7 @@ const Resources = () => {
   // Submits information to backend for login
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const resp = await fetch('http://localhost:8080/LearningResources/getLinks?skill='+search , {
+    const resp = await fetch('http://10.141.193.55:8080/LearningResources/getLinks?skill='+search , {
       // mode: 'no-cors',
       method: 'POST',
       headers: {
