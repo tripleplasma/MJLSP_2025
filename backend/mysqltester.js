@@ -15,8 +15,9 @@ const pool = mysql.createPool(dbConfig);
 async function getUsers(){
     try {
         // For pool initialization, see above
-        const [rows, fields] = await pool.query('SELECT * FROM `Users`');
-        console.log(rows)
+        const [rows, fields] = await pool.query('SELECT username, password FROM Users');
+
+        console.log(fields)
         // Connection is automatically released when query resolves
     } catch (err) {
         console.log(err);

@@ -1,7 +1,20 @@
 const express = require("express");
 const app = express();
 const linkedIn = require("linkedin-jobs-api"); 
+const mysql = require('mysql2/promise');
+require('dotenv').config();
 const port = 8080;
+
+const dbConfig = {
+  host: process.env.HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE
+};
+
+// Create a connection pool (recommended for performance)
+const pool = mysql.createPool(dbConfig);
+
 app.use(express.json());
 
 // Middleware to validate the incoming JSON data
@@ -28,6 +41,43 @@ const validateRequestData = (data) => {
     }
   }
   return null; // No validation errors
+};
+
+const validateUserAndPassword = async (data) => {
+  const required_fields = [
+    "username", "password"
+  ];
+
+  userExists = validateUser(data);
+
+  if (userExists == 0) {
+    return false;
+  }
+
+  const [rows] = await pool.query(
+    "SELECT password FROM Users WHERE username = ? LIMIT 1;",
+    [data["username"]]
+  );
+
+  if (rows[0].password == [data["password"]]) {
+    return true;
+  }
+  
+  return false; // Validation error
+};
+
+const validateUser = async (data) => {
+  const required_fields = [
+    "username"
+  ];
+
+  const [exists] = await pool.query("SELECT EXISTS(SELECT 1 FROM Users WHERE username = ?) AS userExists;", [data["username"]]);
+
+  if (exists[0].userExists == 1) {
+    return true;
+  }
+  
+  return false; // Validation error
 };
 
 // GET endpoint to handle the incoming JSON
@@ -66,13 +116,48 @@ app.get("/extract-job-info", async (req, res) => {
   }
 });
 
+// GET endpoint to handle the incoming JSON
+app.get("/login", async (req, res) => {
+  try {
+    // Extracting the JSON data sent by frontend (the body of the GET request)
+    const jsonData = req.body;
+    console.log("Received data:", jsonData);
+
+    // Validate the incoming data
+    const validation = validateUserAndPassword(jsonData);
+
+    // Send back the response to the frontend
+    res.json(validation); // Sending the response back as JSON
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Something went wrong!" });
+  }
+});
+
+// POST endpoint to handle the incoming JSON
+app.post("/signup", async (req, res) => {
+  try {
+    // Extracting the JSON data sent by frontend (the body of the GET request)
+    const jsonData = req.body;
+    console.log("Received data:", jsonData);
+
+    // Validate the incoming data
+    const validation = validateUser(jsonData);
+
+    // Send back the response to the frontend
+    res.json(validation); // Sending the response back as JSON
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Something went wrong!" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
 async function query_and_parse(queryOptions) {
     const jobs = await query(queryOptions);
-    console.log(jobs);
     return jobs;
 }
 
