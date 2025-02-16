@@ -23,11 +23,11 @@ app.use(cors())
 // Middleware to validate the incoming JSON data
 const validateRequestData = (data) => {
   const required_fields = [
-    "keyword", "limit"
+    "limit"
   ];
 
   const optional_fields = [
-    "location", "dateSincePosted", "jobType", "remoteFilter", "salary", 
+    "keyword", "location", "dateSincePosted", "jobType", "remoteFilter", "salary", 
     "experience-level", "sortBy", "page"
   ];
 
@@ -77,7 +77,7 @@ const addToProfile = async (data) => {
     jobType: "jobType",
     remoteFilter: "remote",
     salary: "salary",
-    "experience-level": "experience-level"
+    "experience-level": "experiencelevel"
   };
 
   const updates = [];
@@ -98,7 +98,7 @@ const addToProfile = async (data) => {
   }
 };
 
-// GET endpoint to handle the incoming JSON
+// POST endpoint to handle the incoming JSON
 app.post("/extract-job-info", async (req, res) => {
   try {
     // Extracting the JSON data sent by frontend (the body of the GET request)
@@ -123,6 +123,34 @@ app.post("/extract-job-info", async (req, res) => {
       sortBy: jsonData.sortBy || "",
       page: jsonData.page || "0",
     };
+
+    const fieldMapping = {
+      keyword: "position", 
+      location: "location",
+      jobType: "jobType",
+      remoteFilter: "remote",
+      salary: "salary",
+      "experience-level": "experiencelevel"
+    };
+
+    if (active_users[jsonData["userId"]] != null) {
+      const username = active_users[jsonData["userId"]];
+      const [profile] = await pool.query(
+        "SELECT position, location, jobType, remote, salary, experiencelevel FROM Users WHERE username = ?",
+        [username]
+      );
+
+      if (profile.length > 0) {
+        const userData = profile[0]; // First row from the result
+
+        // Replace blank query options with user profile data
+        for (const key in fieldMapping) {
+          if (queryOptions[key] == "" && userData[fieldMapping[key]]) {
+            queryOptions[key] = userData[fieldMapping[key]];
+          }
+        }
+      }
+    }
 
     const response = await query_and_parse(queryOptions);
 
@@ -207,8 +235,7 @@ app.post("/profile", async (req, res) => {
     console.log("Signup Received data:", jsonData);
 
     // Validate the incoming data
-    const userExists = await userExist(jsonData);
-    if (userExists) {
+    if (jsonData["userId"] != null) {
       await addToProfile(jsonData);
     } else {
       res.status(400).send("User Does Not Exist");
