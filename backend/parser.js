@@ -15,6 +15,7 @@ const dbConfig = {
 
 // Create a connection pool (recommended for performance)
 const pool = mysql.createPool(dbConfig);
+const active_users = {}
 
 app.use(express.json());
 app.use(cors())
@@ -50,7 +51,7 @@ const validateUserAndPassword = async (data) => {
     "username", "password"
   ];
 
-  userExists = await validateUser(data);
+  let userExists = await userExist(data);
 
   if (userExists == 0) {
     return false;
@@ -68,18 +69,12 @@ const validateUserAndPassword = async (data) => {
   return false; // Validation error
 };
 
-const validateUser = async (data) => {
+const userExist = async (data) => {
   const required_fields = [
     "username"
   ];
-
-  const [exists] = await pool.query("SELECT 1 FROM Users WHERE username = ? LIMIT;", [data["username"]]);
-  console.log(exists)
-  if (exists[0].userExists == 1) {
-    return true;
-  }
-  
-  return false; // Validation error
+  const [exists] = await pool.query("SELECT COUNT(*) FROM Users WHERE username = ?;", [data["username"]]);
+  return exists[0]['COUNT(*)'] > 0
 };
 
 // GET endpoint to handle the incoming JSON
@@ -119,6 +114,7 @@ app.post("/extract-job-info", async (req, res) => {
 });
 
 // GET endpoint to handle the incoming JSON
+// WE USE POST BECAUSE IT ALLOWS US TO SEND BODIES
 app.post("/login", async (req, res) => {
   try {
     // Extracting the JSON data sent by frontend (the body of the GET request)
@@ -148,16 +144,14 @@ app.post("/signup", async (req, res) => {
     console.log("Signup Received data:", jsonData);
 
     // Validate the incoming data
-    const validation = await validateUser(jsonData);
-
-    var added = false
-    if (validation == false) {
+    const usernameTaken = await userExist(jsonData);
+    if (!usernameTaken) {
       await pool.query("INSERT INTO Users (username, password) VALUES (?, ?);", [jsonData['username'], jsonData['password']])
-      added = true;
-    } 
+      res.status(200).send("Register Success")
+    }else{
+      res.status(400).send("User Already Exist")
+    }
 
-    // Send back the response to the frontend
-    res.json(added); // Sending the response back as JSON
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Something went wrong!" });

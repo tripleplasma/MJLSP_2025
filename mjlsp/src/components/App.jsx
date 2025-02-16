@@ -12,6 +12,13 @@ function App() {
   return (
     <Router>
       <div className="App">
+          <div className="logo-container">
+            <Link to="/">
+              <div className="logo-container">
+                <img src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgEmXtfhMS5Ubv_Qemg1CFlrEH-NsPgaPiTg&s"} style={{width:75, height:75}}></img>
+              </div>
+            </Link>
+          </div>
           <div className="navbar-container">
             <Navbar/>
           </div>
@@ -32,7 +39,7 @@ function Navbar() { // Receive gemCount as a prop
   return (
     <div className="navbar-container">
       <nav className="navbar">
-        <Link to="/"><img src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgEmXtfhMS5Ubv_Qemg1CFlrEH-NsPgaPiTg&s"} style={{width:75, height:75}}></img></Link>
+        <Link to="/"></Link>
         {"      "}
         <Link to="/login">Login</Link>
         {"      "}

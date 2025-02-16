@@ -16,7 +16,31 @@ const Register = () => {
       alert('Passwords do not match');
       return;
     }
-
+    const tryLogin = () => {
+        fetch('http://localhost:8080/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: username,
+              password: password
+            }),
+          })
+          .then(response => {
+            if(response.status === 200){
+              navigate('/postings');
+            }else if(response.status === 401){
+              alert('Incorrect user login');
+            }else{
+              console.log("Error")
+            }
+          })
+          .catch(err => {
+            console.error('Error:', err);
+          });
+    }
+    
     fetch('http://localhost:8080/signup', {
         method: 'POST',
         headers: {
@@ -29,37 +53,14 @@ const Register = () => {
     })
     .then(response => {
         if(response.status === 200){
-        //   tryLogin()
-            navigate('/postings');
+            alert('Successfully registered in.');
+            tryLogin()
         }else if(!response.ok) { console.error("I am Error."); return; }
         else return response.json();
     })
     .catch(err => {
         console.error('Error:', err);
     });
-
-    //After successfully registering, log the user in
-    // fetch('http://localhost:5000/registerUser', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({'username':username,'password':password,'sessionId':localStorage.getItem('userId')}),
-    // })
-    // .then(response => {
-    //     if(response.status === 500) { console.error("User not logged in. Please log in to get tracking"); return; }
-    //     else if(response.status === 400) { alert("That user already exists!"); return; }
-    //     else if(!response.ok) { console.error("I am Error."); return; }
-    //     else if(response.status === 200) 
-    //     { 
-    //       alert("Account successfully created"); 
-    //       tryLogin();
-    //     } 
-    // })
-    // .catch((error) => {
-    //   console.error('Error:', error);
-    // });
-
   };
 
   return (
