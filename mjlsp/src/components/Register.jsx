@@ -17,7 +17,7 @@ const Register = ({setLoginUsername}) => {
       return;
     }
     const tryLogin = () => {
-        fetch('http://localhost:8080/login', {
+        fetch('http://10.141.193.55:8081/login', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ const Register = ({setLoginUsername}) => {
           });
     }
     
-    fetch('http://localhost:8080/signup', {
+    fetch('http://10.141.193.55:8081/signup', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
