@@ -1,0 +1,57 @@
+.profile-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+  }
+  .profile-form {
+    width: 80%;
+    max-width: 600px;
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+  .profile-form-group {
+    margin-bottom: 20px;
+  }
+  .profile-form-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  .profile-form-item label {
+    flex: 1;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  .profile-form-item input,
+  .profile-form-item select,
+  .profile-form-item textarea {
+    flex: 2;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+  .profile-form-item textarea {
+    resize: vertical;
+  }
+  .profile-form-submit {
+    display: flex;
+    justify-content: center;
+  }
+  .profile-form-submit button {
+    padding: 15px 30px;
+    background-color: #C5050C;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  .profile-form-submit button:hover {
+    background-color: #45a049;
+  }

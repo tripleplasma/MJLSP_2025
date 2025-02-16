@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const linkedIn = require("linkedin-jobs-api"); 
 const mysql = require('mysql2/promise');
+const cors = require('cors');
 require('dotenv').config();
 const port = 8080;
 
@@ -14,8 +15,10 @@ const dbConfig = {
 
 // Create a connection pool (recommended for performance)
 const pool = mysql.createPool(dbConfig);
+const active_users = {}
 
 app.use(express.json());
+app.use(cors())
 
 // Middleware to validate the incoming JSON data
 const validateRequestData = (data) => {
@@ -44,11 +47,7 @@ const validateRequestData = (data) => {
 };
 
 const validateUserAndPassword = async (data) => {
-  const required_fields = [
-    "username", "password"
-  ];
-
-  userExists = validateUser(data);
+  let userExists = await userExist(data);
 
   if (userExists == 0) {
     return false;
@@ -59,29 +58,48 @@ const validateUserAndPassword = async (data) => {
     [data["username"]]
   );
 
-  if (rows[0].password == [data["password"]]) {
+  if (rows.length === 0 || rows[0].password == data["password"]) {
     return true;
   }
   
   return false; // Validation error
 };
 
-const validateUser = async (data) => {
-  const required_fields = [
-    "username"
-  ];
+const userExist = async (data) => {
+  const [exists] = await pool.query("SELECT COUNT(*) FROM Users WHERE username = ?;", [data["username"]]);
+  return exists[0]['COUNT(*)'] > 0
+};
 
-  const [exists] = await pool.query("SELECT EXISTS(SELECT 1 FROM Users WHERE username = ?) AS userExists;", [data["username"]]);
+const addToProfile = async (data) => {
+  const fieldMapping = {
+    keyword: "position", // Map 'keyword' from data to 'position' in DB
+    location: "location",
+    jobType: "jobType",
+    remoteFilter: "remote",
+    salary: "salary",
+    "experience-level": "experience-level"
+  };
 
-  if (exists[0].userExists == 1) {
-    return true;
+  const updates = [];
+  const values = [];
+
+  for (let key in fieldMapping) {
+    if (data[key] != null) {
+      const columnName = fieldMapping[key]; // Map to correct DB column
+      updates.push(`\`${columnName}\` = ?`);
+      values.push(data[key]);
+    }
   }
-  
-  return false; // Validation error
+
+  if (updates.length > 0) {
+    values.push(active_users[data["userId"]]); // Add username for WHERE condition
+    const sql = `UPDATE Users SET ${updates.join(", ")} WHERE username = ?;`;
+    await pool.query(sql, values);
+  }
 };
 
 // GET endpoint to handle the incoming JSON
-app.get("/extract-job-info", async (req, res) => {
+app.post("/extract-job-info", async (req, res) => {
   try {
     // Extracting the JSON data sent by frontend (the body of the GET request)
     const jsonData = req.body;
@@ -116,18 +134,43 @@ app.get("/extract-job-info", async (req, res) => {
   }
 });
 
+app.post("/logout", async (req, res) => {
+  try {
+    // Extracting the JSON data sent by frontend (the body of the GET request)
+    const jsonData = req.body;
+    console.log("Received data:", jsonData);
+    if(jsonData['userId'] in active_users){
+      console.log(active_users)
+      delete active_users[jsonData['userId']]
+      res.status(200).send("Success");
+    }else{
+      res.status(401).send("Session Id was not valid")
+    }
+
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Something went wrong!" });
+  }
+});
+
 // GET endpoint to handle the incoming JSON
-app.get("/login", async (req, res) => {
+// WE USE POST BECAUSE IT ALLOWS US TO SEND BODIES
+app.post("/login", async (req, res) => {
   try {
     // Extracting the JSON data sent by frontend (the body of the GET request)
     const jsonData = req.body;
     console.log("Received data:", jsonData);
 
     // Validate the incoming data
-    const validation = validateUserAndPassword(jsonData);
+    const validation = await validateUserAndPassword(jsonData);
 
-    // Send back the response to the frontend
-    res.json(validation); // Sending the response back as JSON
+    if(!validation){
+      res.status(401).send("Unauthorized")
+    }else{
+      res.status(200).send("Success");
+      active_users[jsonData['userId']] = jsonData['username']
+    }
+
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Something went wrong!" });
@@ -139,13 +182,39 @@ app.post("/signup", async (req, res) => {
   try {
     // Extracting the JSON data sent by frontend (the body of the GET request)
     const jsonData = req.body;
-    console.log("Received data:", jsonData);
+    console.log("Signup Received data:", jsonData);
 
     // Validate the incoming data
-    const validation = validateUser(jsonData);
+    const usernameTaken = await userExist(jsonData);
+    if (!usernameTaken) {
+      await pool.query("INSERT INTO Users (username, password) VALUES (?, ?);", [jsonData['username'], jsonData['password']])
+      res.status(200).send("Register Success");
+    } else {
+      res.status(400).send("User Already Exist");
+    }
 
-    // Send back the response to the frontend
-    res.json(validation); // Sending the response back as JSON
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Something went wrong!" });
+  }
+});
+
+// POST endpoint to handle the incoming JSON
+app.post("/profile", async (req, res) => {
+  try {
+    // Extracting the JSON data sent by frontend (the body of the GET request)
+    const jsonData = req.body;
+    console.log("Signup Received data:", jsonData);
+
+    // Validate the incoming data
+    const userExists = await userExist(jsonData);
+    if (userExists) {
+      await addToProfile(jsonData);
+    } else {
+      res.status(400).send("User Does Not Exist");
+    }
+
+    res.status(200).send("Profile Updated");
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Something went wrong!" });
