@@ -1,13 +1,14 @@
 import '../css/App.css';
 
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate, Navigate } from 'react-router-dom';
 import {v4 as uuidv4} from 'uuid';
 import Login from './Login';
 import Register from './Register';
 import MainPage from './MainPage';
 import Postings from './Postings';
 import Resources from './Resources';
+import Profile from './Profile';
 
 function App() {
 
@@ -58,6 +59,10 @@ function App() {
     };
   }, []);
 
+  const ProtectedRoute = ({isLoggedIn, children }) => {
+    return isLoggedIn != null ? children : <Navigate to="/login" />;
+  };
+  
   return (
     <Router>
       <div className="App">
@@ -76,7 +81,7 @@ function App() {
             {username == null ?
               (<Link to="/login" className="button">Login</Link>)
               : 
-              (<div className='username'>Hello, {username}</div>) 
+              (<Link to="/profile" className='button'>{username}</Link>) 
             }
           </div>
         </div>
@@ -87,6 +92,12 @@ function App() {
             <Route path="/register" element={<Register setLoginUsername={setUsername}/>} />
             <Route path="/postings" element={<Postings/>} />
             <Route path="/resources" element={<Resources/>} />
+            <Route path="/profile" element={
+              <ProtectedRoute isLoggedIn={username}>
+                <Profile/>
+              </ProtectedRoute>
+              } 
+            />
           </Routes>
         </div>
       </div>
