@@ -48,7 +48,7 @@ const validateUserAndPassword = async (data) => {
     "username", "password"
   ];
 
-  userExists = validateUser(data);
+  userExists = await validateUser(data);
 
   if (userExists == 0) {
     return false;
@@ -59,7 +59,7 @@ const validateUserAndPassword = async (data) => {
     [data["username"]]
   );
 
-  if (rows[0].password == [data["password"]]) {
+  if (rows.length === 0 || rows[0].password == data["password"]) {
     return true;
   }
   
@@ -72,7 +72,7 @@ const validateUser = async (data) => {
   ];
 
   const [exists] = await pool.query("SELECT EXISTS(SELECT 1 FROM Users WHERE username = ?) AS userExists;", [data["username"]]);
-
+  
   if (exists[0].userExists == 1) {
     return true;
   }
@@ -124,7 +124,7 @@ app.get("/login", async (req, res) => {
     console.log("Received data:", jsonData);
 
     // Validate the incoming data
-    const validation = validateUserAndPassword(jsonData);
+    const validation = await validateUserAndPassword(jsonData);
 
     // Send back the response to the frontend
     res.json(validation); // Sending the response back as JSON
@@ -142,10 +142,16 @@ app.post("/signup", async (req, res) => {
     console.log("Received data:", jsonData);
 
     // Validate the incoming data
-    const validation = validateUser(jsonData);
+    const validation = await validateUser(jsonData);
+
+    var added = false
+    if (validation == false) {
+      await pool.query("INSERT INTO Users (username, password) VALUES (?, ?);", [jsonData['username'], jsonData['password']])
+      added = true;
+    } 
 
     // Send back the response to the frontend
-    res.json(validation); // Sending the response back as JSON
+    res.json(added); // Sending the response back as JSON
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Something went wrong!" });
