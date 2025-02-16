@@ -5,33 +5,32 @@ import '../css/Resources.css';
 
 const Resources = () => {
   const [search, setSearch] = useState(''); // Stores search query to find resources
+  const [resources, setResources] = useState([]);
   const navigate = useNavigate()
   // Submits information to backend for login
   const handleSubmit = (event) => {
     event.preventDefault();
-    // fetch('http://localhost:8080/login', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     // username: username,
-    //     // password: password
-    //   }),
-    // })
-    // .then(response => {
-    //   if(response.status === 200){
-    //     alert('Successfully logged in.');
-    //     navigate('/postings');
-    //   }else if(response.status === 401){
-    //     alert('Incorrect user login');
-    //   }else{
-    //     console.log("Error")
-    //   }
-    // })
-    // .catch(err => {
-    //   console.error('Error:', err);
-    // });
+    fetch('http://localhost:8080/LearningResources/getLinks?skill=' , {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        search
+      }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then(data => {
+      setResources(data); // Correctly update state with the API response
+    })
+    .catch(err => {
+      console.error('Error:', err);
+    });
   };
 
   return (

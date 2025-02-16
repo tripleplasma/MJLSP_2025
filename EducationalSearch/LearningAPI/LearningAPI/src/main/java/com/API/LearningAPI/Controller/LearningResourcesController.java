@@ -20,9 +20,9 @@ public class LearningResourcesController {
     @Autowired
     LearningResourceService servicer;
 
-    @GetMapping("/getLinks")
-    public List<URL> getLinksMethod(){ // @RequestParam("skill") String skillName
-        return servicer.getLearningResources();
+    @PostMapping("/getLinks")
+    public List<URL> getLinksMethod(@RequestParam("skill") String skillName){ // @RequestParam("skill") String skillName
+        return servicer.getLearningResources(skillName);
     }
     
 }

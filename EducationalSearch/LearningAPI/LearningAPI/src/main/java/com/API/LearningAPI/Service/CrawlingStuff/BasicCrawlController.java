@@ -32,7 +32,7 @@ public class BasicCrawlController {
 
         // Do you need to set a proxy? If so, you can use:
         // config.setProxyHost("proxyserver.example.com");
-        // config.setProxyPort(8080);
+        //config.setProxyPort(8081);
 
         // If your proxy also needs authentication:
         // config.setProxyUsername(username); config.getProxyPassword(password);
