@@ -15,7 +15,7 @@ const Postings = () => {
   const [sortBy, setSortBy] = useState('');
   const [page, setPage] = useState('');
   
-  const [postings, setPostings] = useState('');
+  const [postings, setPostings] = useState([]);
 
   // sends information to linkedin-job-api
   const handleSubmit = (event) => {
@@ -39,12 +39,13 @@ const Postings = () => {
       }),
     })
     .then(response => {
-      if(response.status === 200) {
-        setPostings(response.json());
-        // onLoginSuccess(); //Callback to change navbar name
-        // navigate('/');
-      }else if(!response.ok) { console.error("I am Error."); return; }
-      else return response.json();
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then(data => {
+      setPostings(data); // Correctly update state with the API response
     })
     .catch(err => {
       console.error('Error:', err);
@@ -77,7 +78,23 @@ const Postings = () => {
       <button onClick={handleSubmit}>Find Jobs</button>
       <br></br>
       <br></br>
-      
+      <div className="job-list">
+        {postings.length > 0 ? (
+          postings.map((job, index) => (
+            <div key={index} className="job-card">
+              <img src={job.companyLogo} alt={`${job.company} Logo`} />
+              <h3>{job.position}</h3>
+              <p><strong>Company:</strong> {job.company}</p>
+              <p><strong>Location:</strong> {job.location}</p>
+              <p><strong>Date Posted:</strong> {job.date}</p>
+              <a href={job.jobUrl} target="_blank" rel="noopener noreferrer">View Job</a>
+              <br></br>
+            </div>
+          ))
+        ) : (
+          <p>No job postings found.</p>
+        )}
+      </div>
     </div>
   );
 };
